@@ -1,4 +1,5 @@
 from datetime import datetime, date
+from time import time
 from typing import Optional
 
 import uvicorn
@@ -206,6 +207,74 @@ def editar_aluno(id: int, form: AlunoEditar):
             return aluno
     raise HTTPException(status_code=404, detail=f"Aluno não encontrado com id: {id}")
 
+
+class Formacao(BaseModel):
+    id: int = Field()
+    nome: str = Field()
+    descricao: Optional [str] = Field()
+    duracao: int = Field()
+
+
+class FormacaoCadastro(BaseModel):
+    nome: str = Field()
+    descricao: Optional[str] = Field()
+    duracao: int = Field()
+
+
+class FormacaoEditar(BaseModel):
+    descricao: Optional[str] = Field()
+
+
+formacoes = [
+    # instanciando um objeto da Class Formação
+    Formacao(id=1, nome="Direito", descricao="curso completo", duracao="5"),
+    Formacao(id=2, nome="Engenharia Civil", descricao="curso completo", duracao="4")
+]
+
+
+@app.get("/api/formacoes")
+def listar_todas_formacoes():
+    return formacoes
+
+
+@app.get("/api/formacoes/{id}")
+def obter_por_id_formacao(id: int):
+    for formacao in formacoes:
+        if formacao.id == id:
+            return formacao
+
+    # Lançando uma exceção com o status code de 404(não encontrado)
+    raise HTTPException(status_code=404, detail=f"Formação não encontrada com id: {id}")
+
+
+@app.post("/api/formacoes")
+def cadastrar_formacao(form: FormacaoCadastro):
+    ultimo_id = max([formacao.id for formacao in formacoes], default=0)
+
+    # instanciar um objeto da classe Formação
+    formacao = Formacoes(id=ultimo_id + 1, nome=form.nome, descricao=form.descricao, duracao=form.duracao)
+
+    formacoes.append(formacao)
+
+    return formacao
+
+
+@app.delete("/api/cursos/{id}", status_code=204)
+def apagar_curso(id: int):
+    for formacao in formacoes:
+        if formacao.id == id:
+            formacoes.remove(formacao)
+            return
+    raise HTTPException(status_code=404, detail=f"Formação não encontrado com id: {id}")
+
+
+@app.put("/api/formacoes/{id}")
+def editar_formacao(id: int, form: FormacaoEditar):
+    for formacao in formacoes:
+        if formacao.id == id:
+            formacao.descricao = form.decricao
+            return formacao
+    raise HTTPException(status_code=404, detail=f"Formação não encontrado com id: {id}")
 
 if __name__ == "__main__":
     uvicorn.run("main:app")
