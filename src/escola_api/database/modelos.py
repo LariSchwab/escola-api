@@ -49,8 +49,6 @@ class MatriculaEntidade(Base):
 
 
     # Relacionamentos
-    aluno = relationship("AlunoEntidade", back_populates="matriculas", lazy="joined")
-    curso = relationship("CursoEntidade", back_populates="matriculas", lazy="joined")
     # formacoes = relationship("FormacaoEntidade", back_populates="matriculas")
 
     # lazy="select":
@@ -77,3 +75,6 @@ class MatriculaEntidade(Base):
     # Nunca carrega automaticamente. Só traz Aluno se você usar
     # .options(joinedload(...)) ou selectinload() explicitamente.
     # aluno = relationship("AlunoEntidade", back_populates="matriculas", lazy="noload")
+
+    aluno = relationship("AlunoEntidade", back_populates="matriculas", lazy="joined")
+    curso = relationship("CursoEntidade", back_populates="matriculas", lazy="joined")
